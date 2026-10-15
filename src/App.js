@@ -10,6 +10,7 @@ const StudentItem = (sql) => {
       <td>{sql.student.score}</td>
       <td>
         <button 
+          type="button"
           className="btn-delete" 
           onClick={() => sql.onDelete(sql.student.id)}
         >
@@ -51,10 +52,10 @@ const StudentTable = (sql) => {
 
 const App = () => {
   const [students, setStudents] = useState([
-    { id: 'B25DCCC090', name: 'Trần Văn Bom', score: 8.5, className: '12A1' },
-    { id: 'B25DCCC190', name: 'Nguyễn Thị Hảo Hảo', score: 4.25, className: '12A5' },
-    { id: 'B25DCCC090', name: 'Phạm Thị Su Su', score: 9.5, className: '12A6' },
-    { id: 'B25DCCC090', name: 'Lê Thị Quất', score: 8.5, className: '12A7' },
+    { id: 'B25DCCC149', name: 'Nguyễn Lựu Đạn', score: 8.5, className: '12A1' },
+    { id: 'B25DCCC053', name: 'Trần Flash', score: 3, className: '12A7' },
+    { id: 'B25DCCC049', name: 'Lê Thị Mìn', score: 4.75, className: '12A5' },
+    { id: 'B25DCCC153', name: 'Phạm Văn Boom', score: 9.75, className: '12A3' },
     
   ]);
 
@@ -66,7 +67,6 @@ const App = () => {
   });
 
   const [errorMessage, setErrorMessage] = useState('');
-
   const [filterType, setFilterType] = useState('ALL');
 
   const handleInputChange = (e) => {
@@ -82,11 +82,13 @@ const App = () => {
     e.preventDefault();
 
     if (!formData.id.trim() || !formData.name.trim() || !formData.className.trim() || formData.score === '') {
-      setErrorMessage('Vui lòng điền đầy đủ tất cả các trường thông tin!');
+      setErrorMessage('Vui lòng điền đầy đủ tất cả các trường!');
       return;
     }
 
-    const isExisted = students.some((s) => s.id.toString().trim() === formData.id.trim());
+    const isExisted = students.some(
+      (s) => String(s.id).trim().toLowerCase() === formData.id.trim().toLowerCase()
+    );
     if (isExisted) {
       setErrorMessage(`Mã sinh viên "${formData.id.trim()}" đã tồn tại! Vui lòng chọn mã khác.`);
       return;
@@ -94,7 +96,7 @@ const App = () => {
 
     const numericScore = parseFloat(formData.score);
     if (isNaN(numericScore) || numericScore < 0 || numericScore > 10) {
-      setErrorMessage('Điểm số phải là số hợp lệ từ 0 đến 10!');
+      setErrorMessage('Điểm số phải là số từ 0 đến 10!');
       return;
     }
 
@@ -106,13 +108,12 @@ const App = () => {
     };
 
     setStudents((prev) => [...prev, newStudent]);
-
     setFormData({ id: '', name: '', score: '', className: '' });
     setErrorMessage('');
   };
 
-  const handleDeleteStudent = (id) => {
-    setStudents((prev) => prev.filter((student) => student.id !== id));
+  const handleDeleteStudent = (idToDelete) => {
+    setStudents((prev) => prev.filter((student) => String(student.id) !== String(idToDelete)));
   };
 
   const filteredStudents = students.filter((student) => {
@@ -130,7 +131,6 @@ const App = () => {
     <div className="container">
       <h2>Ứng dụng Quản lý Điểm Sinh viên</h2>
 
-      {}
       <div className="card">
         <h3>Thêm Sinh Viên</h3>
         {errorMessage && <p className="error-alert">{errorMessage}</p>}
@@ -138,7 +138,7 @@ const App = () => {
           <input
             type="text"
             name="id"
-            placeholder="Mã SV (VD: SV01)"
+            placeholder="Mã SV"
             value={formData.id}
             onChange={handleInputChange}
           />
@@ -168,28 +168,29 @@ const App = () => {
         </form>
       </div>
 
-      {}
       <div className="card stats-card">
         <p>{`Tổng số lượng sinh viên: ${totalStudents}`}</p>
         <p>{`Điểm trung bình của lớp: ${averageScore}`}</p>
       </div>
 
-      {}
       <div className="filter-group">
         <span>Lọc danh sách: </span>
         <button 
+          type="button"
           className={filterType === 'ALL' ? 'active' : ''} 
           onClick={() => setFilterType('ALL')}
         >
           Tất cả
         </button>
         <button 
+          type="button"
           className={filterType === 'EXCELLENT' ? 'active' : ''} 
           onClick={() => setFilterType('EXCELLENT')}
         >
           Sinh viên Giỏi (Điểm &ge; 8)
         </button>
         <button 
+          type="button"
           className={filterType === 'FAILED' ? 'active' : ''} 
           onClick={() => setFilterType('FAILED')}
         >
@@ -197,7 +198,6 @@ const App = () => {
         </button>
       </div>
 
-      {}
       <StudentTable 
         students={filteredStudents} 
         onDelete={handleDeleteStudent} 
